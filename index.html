@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Gift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffb3ba;
+            color: #2c2c2c;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 218, 221, 0.2) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .paper-texture {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9Im5vaXNlIj4KICAgICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOSIgbnVtT2N0YXZlcz0iNCIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNub2lzZSkiIG9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4K');
+            background-size: 100px 100px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
+        .fade-in { opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .fade-in.show { opacity: 1; }
+
+        /* Landing Page */
+        #landing h1 { font-family: 'Dancing Script', cursive; font-size: 2.5em; margin-bottom: 30px; }
+        button {
+            font-family: 'Poppins', sans-serif; font-size: 1.1em; padding: 12px 25px;
+            border: none; border-radius: 25px; background-color: #ff9aa2; color: #fff;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button:hover { background-color: #ff7a8a; transform: scale(1.05); }
+
+        /* Menu */
+        #menu { display: none; }
+        .menu-items { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px; }
+        .menu-item {
+            background: #fff; padding: 20px; border-radius: 15px; width: 180px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; border: 2px solid #ffb3ba;
+        }
+        .menu-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+
+        /* Sections */
+        .section { display: none; padding: 30px 10px; }
+        .section h2 { font-family: 'Dancing Script', cursive; font-size: 2.2em; }
+
+        /* Polaroid Strip Logic */
+        .memories-container {
+            display: flex; flex-direction: column; align-items: center; gap: 30px;
+        }
+        .strips-wrapper {
+            display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+        }
+        .polaroid-strip {
+            background: #fff; padding: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; gap: 10px; width: 160px;
+            transform: rotate(-2deg);
+        }
+        .polaroid-strip:nth-child(even) { transform: rotate(2deg); }
+        .polaroid-strip img { width: 100%; height: 140px; object-fit: cover; }
+
+        .video-polaroid {
+            background: #fff; padding: 15px 15px 40px 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            max-width: 320px; margin: 0 auto;
+        }
+        .video-polaroid video { width: 100%; border-radius: 2px; }
+
+        /* Flower Polaroid */
+        .flower-polaroid {
+            background: #fff; padding: 15px 15px 50px 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 280px; margin: 20px auto; transform: rotate(-1deg);
+        }
+        .flower-polaroid img { width: 100%; height: auto; }
+
+        .return-btn { margin-top: 40px; background-color: #6c757d; }
+
+        @media (max-width: 600px) {
+            .strips-wrapper { gap: 20px; }
+            .polaroid-strip { width: 130px; }
+            .polaroid-strip img { height: 110px; }
+        }
+    </style>
+</head>
+<body class="paper-texture">
+    <div class="container">
+        <div id="landing" class="fade-in show">
+            <h1>Halo Sayangku! <br>Apakah kamu ingin melihat hadiahmu?</h1>
+            <div class="buttons">
+                <button id="yes-btn">Ya, Mau!</button>
+                <button id="no-btn">Enggak Dulu</button>
+            </div>
+            <p id="message" style="font-family: 'Dancing Script'; font-size: 1.5em; margin-top: 20px;"></p>
+        </div>
+
+        <div id="menu" class="fade-in">
+            <h2 style="font-family: 'Dancing Script'; font-size: 2.5em;">Pilih Hadiahmu</h2>
+            <div class="menu-items">
+                <div class="menu-item" data-section="memories">
+                    <img src="https://drive.google.com/uc?id=1aPyzGvrqPwlYShsPiliTy5oY5en2NueX" alt="Icon">
+                    <p>Kenangan Kita</p>
+                </div>
+                <div class="menu-item" data-section="flowers">
+                    <img src="https://drive.google.com/uc?id=1vALAKBKtjY2TYRNjUBzbfC2OU9g3p2mg" alt="Icon">
+                    <p>Bunga Virtual</p>
+                </div>
+                <div class="menu-item" data-section="song">
+                    <img src="https://drive.google.com/uc?id=1jAsVieBxh35MRDcCoo6P76iSncwZMgkE" alt="Icon">
+                    <p>Lagu Kita</p>
+                </div>
+                <div class="menu-item" data-section="message-section">
+                    <img src="https://drive.google.com/uc?id=1UqENuKjM70azbY3ByhifA4avDqXXpxU_" alt="Icon">
+                    <p>Pesan Cinta</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="memories" class="section fade-in">
+            <h2>Kenangan yang Tertangkap</h2>
+            <div class="memories-container">
+                <div class="strips-wrapper">
+                    <div class="polaroid-strip">
+                        <img src="https://drive.google.com/uc?id=1sTSIKA3CdAXNdjGYutwjzxb3_cJeEhh5">
+                        <img src="https://drive.google.com/uc?id=1FtgaBVR5okFadfM7yJ3Cn3jleJ55ufmG">
+                        <img src="https://drive.google.com/uc?id=1RSOAjdz-rqsGUxd1S5YnmePCA_KJcoPh">
+                    </div>
+                    <div class="polaroid-strip">
+                        <img src="https://drive.google.com/uc?id=1I2M6t0PK87UQTQjT7np3QNE6_LGlrH-W">
+                        <img src="https://drive.google.com/uc?id=1CJxnohqFnOue9Wkh18rDS7dg2yq7aFJQ">
+                        <img src="https://drive.google.com/uc?id=1NMHFJFHjtnTV32jmYCMLzHgtB_wPHbPP">
+                    </div>
+                </div>
+                
+                <div class="video-polaroid">
+                    <video controls>
+                        <source src="https://drive.google.com/uc?id=1nul5upqLTDp29SgwExJvfWmF_JmQTdKg" type="video/mp4">
+                        Browser kamu tidak mendukung video.
+                    </video>
+                    <p style="font-family: 'Dancing Script'; margin-top: 15px;">Moment Spesial ❤️</p>
+                </div>
+            </div>
+            <button class="return-btn" onclick="showMenu()">Kembali</button>
+        </div>
+
+        <div id="flowers" class="section fade-in">
+            <h2>Bunga Virtual</h2>
+            <div class="flower-polaroid">
+                <img src="https://drive.google.com/uc?id=1Q0al8XtfN8MSUQ6xCyoHn8-avYCdopr6" alt="Bouquet">
+            </div>
+            <p style="font-family: 'Dancing Script'; font-size: 1.5em;">Bunga ini mekar hanya untukmu, sayangku.</p>
+            <button class="return-btn" onclick="showMenu()">Kembali</button>
+        </div>
+
+        <div id="song" class="section fade-in">
+            <h2>Lagu Kita</h2>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/2rdV2CEkjtk" frameborder="0" allowfullscreen></iframe>
+            <button class="return-btn" onclick="showMenu()">Kembali</button>
+        </div>
+
+        <div id="message-section" class="section fade-in">
+            <h2>Pesan untuk Sayangku</h2>
+            <div style="background: #fff; padding: 25px; border-radius: 10px; text-align: left; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <p style="font-family: 'Dancing Script'; font-size: 1.3em; line-height: 1.6;">
+                    Sayangku,<br><br>
+                    Sejak pertama kali mata kita bertemu, aku tahu kamu adalah orang yang akan memenuhi dunia ku dengan cahaya. Senyumanmu adalah matahari terbitku, tawamu adalah melodi favoritku.<br><br>
+                    Setiap hari bersamamu adalah harta karun. Aku berjanji untuk menghargaimu, mendukungmu, dan mencintaimu selamanya. Kamu adalah segalanya.<br><br>
+                    Selamanya milikmu,<br>
+                    Pasanganmu ❤️
+                </p>
+            </div>
+            <button class="return-btn" onclick="showMenu()">Kembali</button>
+        </div>
+    </div>
+
+    <script>
+        const landing = document.getElementById('landing');
+        const menu = document.getElementById('menu');
+        const sections = document.querySelectorAll('.section');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const message = document.getElementById('message');
+
+        function showMenu() {
+            sections.forEach(s => { s.style.display = 'none'; s.classList.remove('show'); });
+            menu.style.display = 'block';
+            setTimeout(() => menu.classList.add('show'), 10);
+            landing.style.display = 'none';
+        }
+
+        function showSection(id) {
+            menu.style.display = 'none';
+            const target = document.getElementById(id);
+            target.style.display = 'block';
+            setTimeout(() => target.classList.add('show'), 10);
+        }
+
+        yesBtn.addEventListener('click', showMenu);
+        noBtn.addEventListener('click', () => {
+            message.textContent = "Aku janji kamu bakal suka, coba klik 'Ya' deh! 🥺";
+        });
+
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => showSection(item.getAttribute('data-section')));
+        });
+    </script>
+</body>
+</html>
